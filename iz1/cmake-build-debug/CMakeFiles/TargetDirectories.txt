@@ -1,3 +1,0 @@
-/home/nozim/CLionProjects/techno-c-cpp/iz1/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/nozim/CLionProjects/techno-c-cpp/iz1/cmake-build-debug/CMakeFiles/iz1.dir
-/home/nozim/CLionProjects/techno-c-cpp/iz1/cmake-build-debug/CMakeFiles/edit_cache.dir
