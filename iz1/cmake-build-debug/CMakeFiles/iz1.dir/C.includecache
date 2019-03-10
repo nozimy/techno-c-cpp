@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/nozim/CLionProjects/techno-c-cpp/iz1/main.c
+stdio.h
+-
+stdlib.h
+-
+math.h
+-
+

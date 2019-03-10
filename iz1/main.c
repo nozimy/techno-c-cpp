@@ -23,114 +23,165 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
-void printIntArr(int *arr, size_t n);
-void swap(int *a, int *b);
-void findMaxs(int *arr, size_t n, size_t m, int *maxArr);
+void print_int_arr(const int *arrayToPrint, size_t arraySize);
+
+int swap_array_elems(int *i, int *j);
+
+int* find_k_max(int *sourceArray, size_t sourceArraySize, size_t k);
+
+int run_max_search();
+
+int stdin_read_num(size_t *int_number);
+
+int stdin_read_arr(int *arrayToStore, size_t arraySize);
+
+int free_get_error(int *array);
+
+
+static const int ERROR_CODE = -1;
+
+int main(void)
+{
+    int errCode = run_max_search();
+
+    if (errCode == ERROR_CODE){
+        printf("[error]");
+    }
+
+    return 0;
+}
 
 /**
  * Пишет в стандартный вывод элементы массива arr
- * @param arr
- * @param n
+ * @param arrayToPrint
+ * @param arraySize
  */
-void printIntArr(int *arr, size_t n)
+void print_int_arr(const int *arrayToPrint, size_t arraySize)
 {
-    for (int i = 0; i < n; i++)
-    {
-        printf("%d ", arr[i]);
+    if (arrayToPrint != NULL){
+        for (int i = 0; i < arraySize; i++)
+        {
+            printf("%d ", arrayToPrint[i]);
+        }
+        printf("\n");
     }
-    printf("\n");
-}
-
-void swap(int *a, int *b)
-{
-    int t = *b;
-    *b = *a;
-    *a = t;
 }
 
 /**
- * Ищет m наибольших элементов в массиве arr и записывает их в массив maxArr
- * @param arr
- * @param n
- * @param m
- * @param maxArr
- * @return указатель на массива maxArr
- */
-void findMaxs(int *arr, size_t n, size_t m, int *maxArr)
+ * меняет местами значения указателей i и j между собой
+ * */
+int swap_array_elems(int *i, int *j)
 {
-    int maxValue;
-    int i, j;
-
-    for(i = 0; i < m; i++)
-    {
-        maxValue = arr[i];
-
-        for(j = i+1; j < n; j++)
-        {
-            if(arr[j] > maxValue)
-            {
-                maxValue = arr[j];
-                swap(&arr[i], &arr[j]);
-            }
-        }
-        maxArr[i] = maxValue;
+    if (i != NULL && j != NULL){
+        int t = *j;
+        *j = *i;
+        *i = t;
+        return 0;
+    } else {
+        return ERROR_CODE;
     }
 }
 
-int readNum(size_t * num){
-    return scanf("%zd", num);
+/**
+ * Аллоцирует массив kMaxArray размером k,
+ * ищет k наибольших элементов в массиве sourceArray и
+ * записывает их в массив kMaxArray
+ *
+ * @param sourceArray
+ * @param sourceArraySize
+ * @param k
+ * @param kMaxArray
+ * @return указатель на массив kMaxArray
+ */
+int* find_k_max(int *sourceArray, size_t sourceArraySize, size_t k)
+{
+    int *kMaxArray = malloc(sizeof(*kMaxArray) * k);
+    if (kMaxArray == NULL || sourceArray == NULL)
+    {
+        return NULL;
+    }
+
+    for(int i = 0; i < k; i++)
+    {
+        int maxValue = sourceArray[i];
+
+        for(int j = i+1; j < sourceArraySize; j++)
+        {
+            if(sourceArray[j] > maxValue)
+            {
+                maxValue = sourceArray[j];
+                swap_array_elems(&sourceArray[i], &sourceArray[j]);
+            }
+        }
+        kMaxArray[i] = maxValue;
+    }
+
+    return kMaxArray;
 }
 
-int readArr(int * arr, size_t n){
-    for (int i = 0; i < n; i++)
+int stdin_read_num(size_t *int_number){
+    if (int_number != NULL) {
+        return scanf("%zd", int_number);
+    }
+    return ERROR_CODE;
+
+}
+
+int stdin_read_arr(int *arrayToStore, size_t arraySize){
+    if (arrayToStore == NULL){
+        return ERROR_CODE;
+    }
+    for (int i = 0; i < arraySize; i++)
     {
-        if (scanf("%d", &arr[i]) != 1)
+        if (scanf("%d", &arrayToStore[i]) != 1)
         {
-            return -1;
+            return ERROR_CODE;
         }
     }
     return 0;
 }
 
-int runMaxSearch(){
-    size_t n, m;
-    int *arr;
-    int *maxArr;
 
-    if (readNum(&n) == -1){
-        return -1;
+int free_get_error(int *array){
+    if (array != NULL) free(array);
+    return ERROR_CODE;
+}
+
+int run_max_search(){
+    size_t n, m = 0;
+    int *arr = NULL;
+    int *maxArr = NULL;
+
+    if (stdin_read_num(&n) == ERROR_CODE){
+        return ERROR_CODE;
     };
 
     arr = calloc(n, sizeof(int));
     if (arr == NULL)
     {
-        return -1;
+        return ERROR_CODE;
     }
-    if (readArr(arr, n) == -1){
-        free(arr);
-        return -1;
+    if (stdin_read_arr(arr, n) == ERROR_CODE){
+        return free_get_error(arr);
     };
 
-    if (readNum(&m) == -1){
-        return 0;
+    if (stdin_read_num(&m) == ERROR_CODE){
+        return free_get_error(arr);
     };
 
     if (m > n)
     {
-        free(arr);
-        return -1;
+        return free_get_error(arr);
     }
 
-    maxArr = malloc(sizeof(*maxArr) * m);
-    if (maxArr == NULL)
-    {
-        free(arr);
-        return -1;
-    }
 
-    findMaxs(arr, n, m, maxArr);
-    printIntArr(maxArr, m);
+    maxArr = find_k_max(arr, n, m);
+    if (maxArr == NULL){
+        return free_get_error(arr);
+    }
+    print_int_arr(maxArr, m);
 
     free(maxArr);
     free(arr);
@@ -138,13 +189,3 @@ int runMaxSearch(){
     return 0;
 }
 
-int main(void)
-{
-    int errCode = runMaxSearch();
-
-    if (errCode == -1){
-        printf("[error]");
-    }
-
-    return 0;
-}
